@@ -27,6 +27,12 @@
 
   <main class="layout">
     <section class="search-panel">
+      <article class="search-card stagger favorites-card">
+        <h2 id="favoritesTitle">Pinned functions</h2>
+        <p id="favoritesMeta" class="meta"></p>
+        <ul id="favoritesList" class="results" aria-live="polite"></ul>
+      </article>
+
       <article class="search-card stagger">
         <h2 id="functionSearchTitle">Search by function name</h2>
         <label id="functionSearchLabel" for="functionQuery">Function / macro / symbol</label>
@@ -58,6 +64,7 @@
         <div class="detail-head">
           <span id="entryKind" class="badge"></span>
           <h2 id="entryName"></h2>
+          <button id="pinEntryBtn" type="button" class="small-btn" hidden></button>
         </div>
 
         <p id="entrySection" class="detail-meta"></p>

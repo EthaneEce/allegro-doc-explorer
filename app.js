@@ -20,6 +20,9 @@
       topicSearchTitle: 'Search by topic or term',
       topicSearchLabel: 'Text in summaries and descriptions',
       topicSearchPlaceholder: 'Example: mouse cursor clipping',
+      favoritesTitle: 'Pinned functions',
+      favoritesEmpty: 'No pinned function yet.',
+      favoritesCount: (n) => `${n} pinned`,
       themeLabel: 'Theme (section)',
       allThemes: 'All sections',
       functionEmpty: 'Type a function name to start.',
@@ -45,6 +48,8 @@
       translatingDescription: 'Translating description to French...',
       translationFailed: 'French translation failed. Showing English text.',
       translatingQuery: 'Translating query to improve topic search...',
+      pinEntry: 'Pin',
+      unpinEntry: 'Unpin',
       languageToggle: 'FR',
       sectionLabelPrefix: 'Section:',
     },
@@ -60,6 +65,9 @@
       topicSearchTitle: 'Recherche par thème ou terme',
       topicSearchLabel: 'Texte dans les résumés et descriptions',
       topicSearchPlaceholder: 'Exemple : curseur souris clipping',
+      favoritesTitle: 'Fonctions épinglées',
+      favoritesEmpty: 'Aucune fonction épinglée pour le moment.',
+      favoritesCount: (n) => `${n} épinglée${n > 1 ? 's' : ''}`,
       themeLabel: 'Thème (section)',
       allThemes: 'Toutes les sections',
       functionEmpty: 'Saisis un nom de fonction pour commencer.',
@@ -85,6 +93,8 @@
       translatingDescription: 'Traduction de la description en cours...',
       translationFailed: 'La traduction française a échoué. Texte anglais affiché.',
       translatingQuery: 'Traduction de la requête pour améliorer la recherche thématique...',
+      pinEntry: 'Épingler',
+      unpinEntry: 'Désépingler',
       languageToggle: 'EN',
       sectionLabelPrefix: 'Section :',
     },
@@ -93,6 +103,7 @@
   const state = {
     lang: 'en',
     selectedId: null,
+    favorites: [],
     translatedDescriptionById: {},
     translatingDescriptionIds: new Set(),
     translatedQueryByLangAndText: {},
@@ -103,6 +114,8 @@
     translatedTopicQueryEn: '',
     topicTranslationInProgress: false,
   };
+
+  const FAVORITES_STORAGE_KEY = 'allegro_doc_favorites_v1';
 
   const entries = data.entries;
   const entriesById = new Map(entries.map((entry) => [entry.id, entry]));
@@ -118,6 +131,9 @@
     functionQuery: document.getElementById('functionQuery'),
     functionResultsMeta: document.getElementById('functionResultsMeta'),
     functionResults: document.getElementById('functionResults'),
+    favoritesTitle: document.getElementById('favoritesTitle'),
+    favoritesMeta: document.getElementById('favoritesMeta'),
+    favoritesList: document.getElementById('favoritesList'),
     topicSearchTitle: document.getElementById('topicSearchTitle'),
     topicSearchLabel: document.getElementById('topicSearchLabel'),
     topicQuery: document.getElementById('topicQuery'),
@@ -141,6 +157,7 @@
     entrySeeAlso: document.getElementById('entrySeeAlso'),
     openEntrySource: document.getElementById('openEntrySource'),
     translateDescriptionBtn: document.getElementById('translateDescriptionBtn'),
+    pinEntryBtn: document.getElementById('pinEntryBtn'),
     footerStats: document.getElementById('footerStats'),
     footerDate: document.getElementById('footerDate'),
   };
@@ -151,6 +168,68 @@
 
   function normalize(value) {
     return (value || '').trim().toLowerCase();
+  }
+
+  function readCookie(name) {
+    const target = `${name}=`;
+    const parts = document.cookie.split(';');
+    for (const part of parts) {
+      const candidate = part.trim();
+      if (candidate.startsWith(target)) {
+        return decodeURIComponent(candidate.slice(target.length));
+      }
+    }
+    return '';
+  }
+
+  function writeCookie(name, value) {
+    document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=31536000; SameSite=Lax`;
+  }
+
+  function loadFavorites() {
+    let raw = '';
+    try {
+      raw = localStorage.getItem(FAVORITES_STORAGE_KEY) || '';
+    } catch {
+      raw = readCookie(FAVORITES_STORAGE_KEY);
+    }
+
+    if (!raw) {
+      return [];
+    }
+
+    try {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function persistFavorites() {
+    const serialized = JSON.stringify(state.favorites);
+    try {
+      localStorage.setItem(FAVORITES_STORAGE_KEY, serialized);
+    } catch {
+      writeCookie(FAVORITES_STORAGE_KEY, serialized);
+    }
+  }
+
+  function isFavorite(entryId) {
+    return state.favorites.includes(entryId);
+  }
+
+  function toggleFavorite(entryId) {
+    if (!entryId) {
+      return;
+    }
+    if (isFavorite(entryId)) {
+      state.favorites = state.favorites.filter((id) => id !== entryId);
+    } else {
+      state.favorites = [entryId, ...state.favorites];
+    }
+    persistFavorites();
+    renderAll();
   }
 
   function sectionLabel(entry) {
@@ -309,7 +388,7 @@
 
     const name = document.createElement('span');
     name.className = 'result-name';
-    name.textContent = entry.name;
+    name.textContent = isFavorite(entry.id) ? `★ ${entry.name}` : entry.name;
 
     const section = document.createElement('span');
     section.className = 'result-section';
@@ -350,6 +429,25 @@
       for (const li of nodes.functionResults.querySelectorAll('.result-item')) {
         li.classList.remove('active');
       }
+    }
+  }
+
+  function renderFavorites() {
+    clearElement(nodes.favoritesList);
+
+    const locale = t();
+    nodes.favoritesMeta.textContent = state.favorites.length
+      ? locale.favoritesCount(state.favorites.length)
+      : locale.favoritesEmpty;
+
+    for (const entryId of state.favorites) {
+      const entry = entriesById.get(entryId);
+      if (!entry) {
+        continue;
+      }
+      const li = document.createElement('li');
+      li.appendChild(createResultItem(entry));
+      nodes.favoritesList.appendChild(li);
     }
   }
 
@@ -628,6 +726,7 @@
     if (!entry) {
       nodes.emptyState.hidden = false;
       nodes.entryDetail.hidden = true;
+      nodes.pinEntryBtn.hidden = true;
       return;
     }
 
@@ -643,6 +742,8 @@
     nodes.entrySignature.textContent = entry.signatureEn;
     nodes.openEntrySource.href = entry.docUrl;
     nodes.openEntrySource.textContent = locale.sourceEntryLink;
+    nodes.pinEntryBtn.hidden = false;
+    nodes.pinEntryBtn.textContent = isFavorite(entry.id) ? locale.unpinEntry : locale.pinEntry;
 
     renderSeeAlso(entry);
 
@@ -700,6 +801,7 @@
     nodes.functionSearchTitle.textContent = locale.functionSearchTitle;
     nodes.functionSearchLabel.textContent = locale.functionSearchLabel;
     nodes.functionQuery.placeholder = locale.functionSearchPlaceholder;
+    nodes.favoritesTitle.textContent = locale.favoritesTitle;
 
     nodes.topicSearchTitle.textContent = locale.topicSearchTitle;
     nodes.topicSearchLabel.textContent = locale.topicSearchLabel;
@@ -721,6 +823,7 @@
 
   function renderAll() {
     applyStaticTexts();
+    renderFavorites();
     renderFunctionResults();
     renderTopicResults();
     renderEntryDetail();
@@ -755,5 +858,12 @@
     }
   });
 
+  nodes.pinEntryBtn.addEventListener('click', () => {
+    if (state.selectedId) {
+      toggleFavorite(state.selectedId);
+    }
+  });
+
+  state.favorites = loadFavorites().filter((entryId) => entriesById.has(entryId));
   renderAll();
 })();

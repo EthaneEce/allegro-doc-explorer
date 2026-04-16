@@ -6,6 +6,7 @@ Static local explorer for Allegro 4.4.3 documentation with:
 - dedicated search by symbol name
 - dedicated search by topic/term in function docs
 - English/French UI toggle
+- pinned functions (favorites) persisted in browser storage
 - direct links to original Allegro HTML pages and anchors
 
 ## Files
