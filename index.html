@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Allegro Docs Explorer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="bg-shape bg-shape-a" aria-hidden="true"></div>
+  <div class="bg-shape bg-shape-b" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div>
+      <p class="eyebrow" id="eyebrow">Offline Index For Allegro C Docs</p>
+      <h1 id="appTitle">Allegro Docs Explorer</h1>
+      <p class="subtitle" id="appSubtitle">Find functions quickly and search by topic in the full API documentation.</p>
+    </div>
+    <div class="topbar-actions">
+      <button id="langToggle" class="lang-toggle" type="button" aria-label="Switch language">FR</button>
+      <a id="openOriginal" class="source-link" href="allegro.html">Open original docs</a>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="search-panel">
+      <article class="search-card stagger">
+        <h2 id="functionSearchTitle">Search by function name</h2>
+        <label id="functionSearchLabel" for="functionQuery">Function / macro / symbol</label>
+        <input id="functionQuery" type="search" autocomplete="off" placeholder="Example: set_gfx_mode">
+        <p id="functionResultsMeta" class="meta"></p>
+        <ul id="functionResults" class="results" aria-live="polite"></ul>
+      </article>
+
+      <article class="search-card stagger">
+        <h2 id="topicSearchTitle">Search by topic or term</h2>
+        <label id="topicSearchLabel" for="topicQuery">Text in summaries and descriptions</label>
+        <input id="topicQuery" type="search" autocomplete="off" placeholder="Example: mouse cursor clipping">
+
+        <label id="themeLabel" for="themeFilter">Theme (section)</label>
+        <select id="themeFilter"></select>
+
+        <p id="topicResultsMeta" class="meta"></p>
+        <ul id="topicResults" class="results" aria-live="polite"></ul>
+      </article>
+    </section>
+
+    <section class="detail-panel stagger">
+      <div id="emptyState" class="empty-state">
+        <h2 id="emptyTitle">Select a symbol</h2>
+        <p id="emptyDescription">Use one of the search zones to load signatures, docs text, and direct links to the official HTML pages.</p>
+      </div>
+
+      <article id="entryDetail" hidden>
+        <div class="detail-head">
+          <span id="entryKind" class="badge"></span>
+          <h2 id="entryName"></h2>
+        </div>
+
+        <p id="entrySection" class="detail-meta"></p>
+        <p id="entrySummary" class="detail-summary"></p>
+
+        <h3 id="signatureTitle">Signature</h3>
+        <pre id="entrySignature"></pre>
+
+        <div class="description-head">
+          <h3 id="descriptionTitle">Description</h3>
+          <button id="translateDescriptionBtn" type="button" class="small-btn" hidden></button>
+        </div>
+        <div id="entryDescription" class="doc-prose"></div>
+
+        <h3 id="seeAlsoTitle">See also</h3>
+        <ul id="entrySeeAlso" class="see-also"></ul>
+
+        <a id="openEntrySource" class="source-link" target="_blank" rel="noopener noreferrer"></a>
+      </article>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span id="footerStats"></span>
+    <span class="dot">•</span>
+    <span id="footerDate"></span>
+  </footer>
+
+  <script src="data/index.js"></script>
+  <script src="data/search-index.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
