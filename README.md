@@ -15,8 +15,10 @@ Static local explorer for Allegro 4.4.3 documentation with:
 - `styles.css`: UI theme and responsive layout
 - `app.js`: search logic + language switch + runtime translation helper
 - `scripts/build-index.mjs`: parser/index generator from `alleg000.html` ... `alleg048.html`
+- `scripts/build-offline-zip.sh`: creates downloadable offline bundle zip
 - `data/index.js`: generated API dataset for UI
 - `data/search-index.js`: generated optimized search index
+- `downloads/allegro-doc-offline.zip`: offline bundle downloadable from UI button
 - `upstream-index.html`: original `index.html` from liballeg.org mirror
 
 ## Rebuild index
@@ -29,6 +31,12 @@ Optional metadata translation during build (slower, needs network):
 
 ```bash
 TRANSLATE_METADATA=1 bun scripts/build-index.mjs
+```
+
+Build the offline zip bundle:
+
+```bash
+./scripts/build-offline-zip.sh
 ```
 
 ## Run locally

@@ -14,6 +14,7 @@
       appTitle: 'Allegro Docs Explorer',
       appSubtitle: 'Find functions quickly and search by topic in the full API documentation.',
       openOriginal: 'Open original docs',
+      downloadOffline: 'Download offline pack',
       functionSearchTitle: 'Search by function name',
       functionSearchLabel: 'Function / macro / symbol',
       functionSearchPlaceholder: 'Example: set_gfx_mode',
@@ -61,6 +62,7 @@
       appTitle: 'Explorateur De Doc Allegro',
       appSubtitle: 'Trouve rapidement les fonctions et recherche par thème dans toute la documentation API.',
       openOriginal: 'Ouvrir la doc originale',
+      downloadOffline: 'Télécharger le pack hors-ligne',
       functionSearchTitle: 'Recherche par nom de fonction',
       functionSearchLabel: 'Fonction / macro / symbole',
       functionSearchPlaceholder: 'Exemple : set_gfx_mode',
@@ -129,6 +131,7 @@
     appTitle: document.getElementById('appTitle'),
     appSubtitle: document.getElementById('appSubtitle'),
     openOriginal: document.getElementById('openOriginal'),
+    downloadOffline: document.getElementById('downloadOffline'),
     langToggle: document.getElementById('langToggle'),
     functionSearchTitle: document.getElementById('functionSearchTitle'),
     functionSearchLabel: document.getElementById('functionSearchLabel'),
@@ -823,6 +826,7 @@
     nodes.appTitle.textContent = locale.appTitle;
     nodes.appSubtitle.textContent = locale.appSubtitle;
     nodes.openOriginal.textContent = locale.openOriginal;
+    nodes.downloadOffline.textContent = locale.downloadOffline;
     nodes.langToggle.textContent = locale.languageToggle;
 
     nodes.functionSearchTitle.textContent = locale.functionSearchTitle;
