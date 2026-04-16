@@ -50,6 +50,8 @@
       translatingQuery: 'Translating query to improve topic search...',
       pinEntry: 'Pin',
       unpinEntry: 'Unpin',
+      pinResult: 'Pin this function',
+      unpinResult: 'Unpin this function',
       languageToggle: 'FR',
       sectionLabelPrefix: 'Section:',
     },
@@ -95,6 +97,8 @@
       translatingQuery: 'Traduction de la requête pour améliorer la recherche thématique...',
       pinEntry: 'Épingler',
       unpinEntry: 'Désépingler',
+      pinResult: 'Épingler cette fonction',
+      unpinResult: 'Désépingler cette fonction',
       languageToggle: 'EN',
       sectionLabelPrefix: 'Section :',
     },
@@ -379,6 +383,12 @@
   }
 
   function createResultItem(entry) {
+    const locale = t();
+    const favorite = isFavorite(entry.id);
+
+    const row = document.createElement('div');
+    row.className = 'result-row';
+
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'result-item';
@@ -388,7 +398,7 @@
 
     const name = document.createElement('span');
     name.className = 'result-name';
-    name.textContent = isFavorite(entry.id) ? `★ ${entry.name}` : entry.name;
+    name.textContent = entry.name;
 
     const section = document.createElement('span');
     section.className = 'result-section';
@@ -406,7 +416,24 @@
       renderAll();
     });
 
-    return button;
+    const pinButton = document.createElement('button');
+    pinButton.type = 'button';
+    pinButton.className = 'result-pin';
+    if (favorite) {
+      pinButton.classList.add('favorited');
+    }
+    pinButton.textContent = favorite ? '★' : '☆';
+    const pinLabel = favorite ? locale.unpinResult : locale.pinResult;
+    pinButton.setAttribute('aria-label', `${pinLabel}: ${entry.name}`);
+    pinButton.title = `${pinLabel}: ${entry.name}`;
+    pinButton.addEventListener('click', (event) => {
+      event.stopPropagation();
+      toggleFavorite(entry.id);
+    });
+
+    row.appendChild(button);
+    row.appendChild(pinButton);
+    return row;
   }
 
   function renderFunctionResults() {

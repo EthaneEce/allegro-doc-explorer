@@ -211,6 +211,13 @@ select:focus,
   max-height: 240px;
 }
 
+.result-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: stretch;
+}
+
 .result-item {
   margin: 0;
   border: 1px solid var(--border);
@@ -231,6 +238,38 @@ select:focus,
 .result-item.active {
   border-color: var(--accent-strong);
   background: #edf9fa;
+}
+
+.result-pin {
+  margin: 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--muted);
+  cursor: pointer;
+  width: 42px;
+  min-width: 42px;
+  padding: 0;
+  font-size: 1.1rem;
+  line-height: 1;
+  transition: border-color 110ms ease, transform 110ms ease, color 110ms ease, background-color 110ms ease;
+}
+
+.result-pin:hover {
+  border-color: var(--accent);
+  color: var(--accent-strong);
+  transform: translateY(-1px);
+}
+
+.result-pin.favorited {
+  border-color: #d6ad4f;
+  background: #fff7e1;
+  color: #9a6a00;
+}
+
+.result-pin:focus {
+  outline: 2px solid var(--ring);
+  outline-offset: 1px;
 }
 
 .result-name {
